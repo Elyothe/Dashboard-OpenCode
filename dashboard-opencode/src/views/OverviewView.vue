@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { onMounted, computed } from 'vue'
+import { onMounted, computed, watch } from 'vue'
 import { useMetrics } from '@/composables/useMetrics'
+import { useUIStore } from '@/stores/ui'
 import KpiCard from '@/components/KpiCard.vue'
 import TokenChart from '@/components/TokenChart.vue'
 import CostChart from '@/components/CostChart.vue'
@@ -19,13 +20,21 @@ const {
   fetchRuns,
 } = useMetrics()
 
+const ui = useUIStore()
+
 const tokensByDay = computed(() => groupByDay('total_tokens'))
 const costByDay = computed(() => groupByDay('estimated_cost_usd'))
 const energyByDay = computed(() => groupByDay('estimated_energy_kwh'))
 
+function loadData() {
+  fetchRuns(ui.selectedRepo)
+}
+
 onMounted(() => {
-  fetchRuns()
+  loadData()
 })
+
+watch(() => ui.selectedRepo, loadData)
 </script>
 
 <template>

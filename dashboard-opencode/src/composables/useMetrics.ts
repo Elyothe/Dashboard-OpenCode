@@ -32,6 +32,7 @@ export interface TokenUsage {
 
 export function useMetrics() {
   const runs = ref<ReviewRun[]>([])
+  const repos = ref<string[]>([])
   const loading = ref(false)
   const error = ref<string | null>(null)
 
@@ -49,16 +50,40 @@ export function useMetrics() {
     runs.value.reduce((sum, run) => sum + (run.estimated_energy_kwh || 0), 0)
   )
 
-  async function fetchRuns(limit: number = 100) {
+  async function fetchRepos() {
+    try {
+      const { data, error: supabaseError } = await supabase
+        .from('review_runs')
+        .select('repo_name')
+
+      if (supabaseError) throw supabaseError
+
+      const names = new Set<string>()
+      for (const row of data || []) {
+        if (row.repo_name) names.add(row.repo_name)
+      }
+      repos.value = Array.from(names).sort()
+    } catch (err: any) {
+      console.error('Failed to fetch repos:', err.message)
+    }
+  }
+
+  async function fetchRuns(selectedRepo: string | null = null, limit: number = 100) {
     loading.value = true
     error.value = null
 
     try {
-      const { data, error: supabaseError } = await supabase
+      let query = supabase
         .from('review_runs')
         .select('*, token_usage(*)')
         .order('created_at', { ascending: false })
         .limit(limit)
+
+      if (selectedRepo) {
+        query = query.eq('repo_name', selectedRepo)
+      }
+
+      const { data, error: supabaseError } = await query
 
       if (supabaseError) throw supabaseError
 
@@ -70,15 +95,24 @@ export function useMetrics() {
     }
   }
 
-  async function fetchRunByPR(prNumber: number): Promise<ReviewRun | null> {
+  async function fetchRunByPR(
+    prNumber: number,
+    selectedRepo: string | null = null
+  ): Promise<ReviewRun | null> {
     loading.value = true
     error.value = null
 
     try {
-      const { data, error: supabaseError } = await supabase
+      let query = supabase
         .from('review_runs')
         .select('*, token_usage(*)')
         .eq('pr_number', prNumber)
+
+      if (selectedRepo) {
+        query = query.eq('repo_name', selectedRepo)
+      }
+
+      const { data, error: supabaseError } = await query
         .order('created_at', { ascending: false })
         .limit(1)
         .single()
@@ -113,12 +147,14 @@ export function useMetrics() {
 
   return {
     runs,
+    repos,
     loading,
     error,
     totalRuns,
     totalCost,
     totalTokens,
     totalEnergy,
+    fetchRepos,
     fetchRuns,
     fetchRunByPR,
     groupByDay,

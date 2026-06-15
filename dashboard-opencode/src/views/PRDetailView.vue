@@ -1,11 +1,13 @@
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useMetrics, type ReviewRun } from '@/composables/useMetrics'
+import { useUIStore } from '@/stores/ui'
 
 const route = useRoute()
 const router = useRouter()
 const metrics = useMetrics()
+const ui = useUIStore()
 
 const run = ref<ReviewRun | null>(null)
 const loading = ref(false)
@@ -18,14 +20,21 @@ const githubLink = computed(() => {
   return `https://github.com/${run.value.repo_name}/pull/${run.value.pr_number}`
 })
 
-onMounted(async () => {
+async function loadData() {
   loading.value = true
-  run.value = await metrics.fetchRunByPR(prNumber.value)
+  error.value = null
+  run.value = await metrics.fetchRunByPR(prNumber.value, ui.selectedRepo)
   loading.value = false
   if (!run.value) {
     error.value = 'Aucune analyse trouvée pour cette PR'
   }
+}
+
+onMounted(() => {
+  loadData()
 })
+
+watch(() => [route.params.number, ui.selectedRepo], loadData)
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleString('fr-FR')
