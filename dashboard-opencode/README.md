@@ -1,5 +1,24 @@
-# Vue 3 + TypeScript + Vite
+# OpenCode Metrics Dashboard
 
-This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+Dashboard Vue.js 3 + TypeScript + Vite pour visualiser les métriques du pipeline openCode.
 
-Learn more about the recommended Project Setup and IDE Support in the [Vue Docs TypeScript Guide](https://vuejs.org/guide/typescript/overview.html#project-setup).
+## Stack
+
+- Vue 3 (Composition API + `<script setup>`)
+- TypeScript
+- Vite
+- Pinia
+- Vue Router
+- Chart.js / vue-chartjs
+- Supabase (Auth + données)
+
+## Développement local
+
+```bash
+npm install
+npm run dev
+```
+
+## Déploiement
+
+Le déploiement est automatique sur GitHub Pages via `.github/workflows/deploy.yaml`.

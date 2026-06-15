@@ -35,7 +35,7 @@ jobs:
           cache-dependency-path: dashboard-opencode/package-lock.json
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
       - name: Build dashboard
         run: npm run build
