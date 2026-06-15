@@ -16,6 +16,7 @@ export interface ReviewRun {
   commit_sha: string | null
   created_at: string
   token_usage?: TokenUsage[]
+  
 }
 
 export interface TokenUsage {
