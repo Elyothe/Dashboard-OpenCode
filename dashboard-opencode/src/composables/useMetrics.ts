@@ -12,7 +12,6 @@ export interface ReviewRun {
   duration_seconds: number
   runner_os: string
   estimated_cost_usd: number
-  estimated_energy_kwh: number
   commit_sha: string | null
   created_at: string
   token_usage?: TokenUsage[]
@@ -46,10 +45,6 @@ export function useMetrics() {
       0
     )
   )
-  const totalEnergy = computed(() =>
-    runs.value.reduce((sum, run) => sum + (run.estimated_energy_kwh || 0), 0)
-  )
-
   async function fetchRepos() {
     try {
       const { data, error: supabaseError } = await supabase
@@ -129,7 +124,7 @@ export function useMetrics() {
   }
 
   function groupByDay(
-    key: 'total_tokens' | 'estimated_cost_usd' | 'estimated_energy_kwh'
+    key: 'total_tokens' | 'estimated_cost_usd'
   ) {
     const map = new Map<string, number>()
 
@@ -153,7 +148,6 @@ export function useMetrics() {
     totalRuns,
     totalCost,
     totalTokens,
-    totalEnergy,
     fetchRepos,
     fetchRuns,
     fetchRunByPR,

@@ -69,10 +69,6 @@ function formatDate(iso: string) {
           <span class="label">Coût runner</span>
           <span class="value">${{ run.estimated_cost_usd.toFixed(4) }}</span>
         </div>
-        <div class="detail-card">
-          <span class="label">Énergie</span>
-          <span class="value">{{ run.estimated_energy_kwh.toFixed(6) }} kWh</span>
-        </div>
       </div>
 
       <div v-if="tokens" class="token-section">

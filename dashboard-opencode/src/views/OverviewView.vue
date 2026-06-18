@@ -5,7 +5,6 @@ import { useUIStore } from '@/stores/ui'
 import KpiCard from '@/components/KpiCard.vue'
 import TokenChart from '@/components/TokenChart.vue'
 import CostChart from '@/components/CostChart.vue'
-import EnergyChart from '@/components/EnergyChart.vue'
 import RunsTable from '@/components/RunsTable.vue'
 
 const {
@@ -15,7 +14,6 @@ const {
   totalRuns,
   totalCost,
   totalTokens,
-  totalEnergy,
   groupByDay,
   fetchRuns,
 } = useMetrics()
@@ -24,7 +22,6 @@ const ui = useUIStore()
 
 const tokensByDay = computed(() => groupByDay('total_tokens'))
 const costByDay = computed(() => groupByDay('estimated_cost_usd'))
-const energyByDay = computed(() => groupByDay('estimated_energy_kwh'))
 
 function loadData() {
   fetchRuns(ui.selectedRepo)
@@ -64,11 +61,6 @@ watch(() => ui.selectedRepo, loadData)
           :value="totalTokens.toLocaleString('fr-FR')"
           subtitle="tokens consommés"
         />
-        <KpiCard
-          title="Énergie"
-          :value="`${totalEnergy.toFixed(6)} kWh`"
-          subtitle="estimation"
-        />
       </div>
 
       <div class="charts-grid">
@@ -78,10 +70,6 @@ watch(() => ui.selectedRepo, loadData)
         <div class="chart-card">
           <CostChart :data="costByDay" />
         </div>
-      </div>
-
-      <div class="chart-card energy">
-        <EnergyChart :data="energyByDay" />
       </div>
 
       <div class="table-section">
@@ -130,18 +118,10 @@ watch(() => ui.selectedRepo, loadData)
   padding: 1rem;
 }
 
-.chart-card.energy {
-  max-width: 50%;
-}
-
 .table-section h2 {
   margin: 0 0 0.75rem 0;
   font-size: 1.125rem;
 }
 
-@media (max-width: 768px) {
-  .chart-card.energy {
-    max-width: 100%;
-  }
-}
+
 </style>
